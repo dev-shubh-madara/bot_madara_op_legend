@@ -40,12 +40,7 @@ def _is_owner(uid: int) -> bool:
 
 def register(bot: telebot.TeleBot):
 
-    # ── /gen ────────────────────────────────────────────────────
-    @bot.message_handler(commands=["gen"])
-    def gen_cmd(msg: telebot.types.Message):
-        bot.send_message(msg.chat.id, GEN_GUIDE, disable_web_page_preview=True)
-
-    # ── /add ────────────────────────────────────────────────────
+    # ── /add  (manual session string entry for advanced users) ───
     @bot.message_handler(commands=["add"])
     def add_cmd(msg: telebot.types.Message):
         uid = msg.from_user.id
@@ -53,15 +48,9 @@ def register(bot: telebot.TeleBot):
         bot.send_message(
             msg.chat.id,
             "🔐 ꜱᴇɴᴅ ʏᴏᴜʀ ᴩʏʀᴏɢʀᴀᴍ ꜱᴇꜱꜱɪᴏɴ ꜱᴛʀɪɴɢ ɴᴏᴡ.\n\n"
-            "ᴅᴏɴ'ᴛ ʜᴀᴠᴇ ᴏɴᴇ? ᴜꜱᴇ /gen ꜰɪʀꜱᴛ.\n\n"
+            "ᴅᴏɴ'ᴛ ʜᴀᴠᴇ ᴏɴᴇ? ᴜꜱᴇ /gen ᴛᴏ ʟᴏɢɪɴ ᴅɪʀᴇᴄᴛʟʏ.\n\n"
             "⚠️ ᴛʏᴩᴇ /cancel ᴛᴏ ᴀʙᴏʀᴛ."
         )
-
-    @bot.message_handler(commands=["cancel"])
-    def cancel_cmd(msg: telebot.types.Message):
-        uid = msg.from_user.id
-        _pending_add.discard(uid)
-        bot.send_message(msg.chat.id, "❌ ᴄᴀɴᴄᴇʟʟᴇᴅ.")
 
     @bot.message_handler(func=lambda m: m.from_user.id in _pending_add and m.text and not m.text.startswith("/"))
     def receive_session(msg: telebot.types.Message):

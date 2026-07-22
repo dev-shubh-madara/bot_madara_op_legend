@@ -30,9 +30,10 @@ def build_bot() -> telebot.TeleBot:
 
 
 def register_all_plugins(bot: telebot.TeleBot):
-    from plugins import start, help, node_mgmt, admin_cmds, aesthetic, owner_cmds
+    from plugins import start, help, gen_session, node_mgmt, admin_cmds, aesthetic, owner_cmds
     start.register(bot)
     help.register(bot)
+    gen_session.register(bot)   # in-bot login flow — must come before node_mgmt
     node_mgmt.register(bot)
     admin_cmds.register(bot)
     aesthetic.register(bot)
