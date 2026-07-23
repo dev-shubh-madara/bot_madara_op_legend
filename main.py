@@ -7,8 +7,9 @@ import asyncio
 import os
 import telebot
 from config import BOT_TOKEN, OWNER_ID, BOT_NAME, POWERED_BY
-from database import init_db
+from database import init_db, get_setting
 from userbot_manager import load_all_from_db
+from helpers import bq, esc
 
 # ─── Logging ──────────────────────────────────────────────────
 logging.basicConfig(
@@ -30,7 +31,7 @@ def build_bot() -> telebot.TeleBot:
 
 
 def register_all_plugins(bot: telebot.TeleBot):
-    from plugins import start, help, gen_session, node_mgmt, admin_cmds, aesthetic, owner_cmds
+    from plugins import start, help, gen_session, node_mgmt, admin_cmds, aesthetic, owner_cmds, owner_extra
     start.register(bot)
     help.register(bot)
     gen_session.register(bot)   # in-bot login flow — must come before node_mgmt
@@ -38,6 +39,7 @@ def register_all_plugins(bot: telebot.TeleBot):
     admin_cmds.register(bot)
     aesthetic.register(bot)
     owner_cmds.register(bot)
+    owner_extra.register(bot)
     logger.info("All plugins registered.")
 
 
@@ -55,11 +57,13 @@ def home_callback(bot: telebot.TeleBot):
         cpu = psutil.cpu_percent(interval=0.3)
         ram = psutil.virtual_memory().percent
 
-        text = (
+        from config import OWNER_NAME
+        from database import get_userbot_count
+        text = bq(
             f"⭐️ {BOT_NAME} ⭐️\n"
             "━━━━━━━━━━━━━━━━━━\n"
             "╭── 👑 ᴀᴜᴛʜᴏʀɪᴛʏ\n"
-            f"│   ├── ᴍᴀꜱᴛᴇʀ: {OWNER_NAME}\n"
+            f"│   ├── ᴍᴀꜱᴛᴇʀ: {esc(OWNER_NAME)}\n"
             f"│   ╰── ᴜɪᴅ: {OWNER_ID}\n"
             "│\n"
             "├── ⚡️ ꜱʏꜱᴛᴇᴍ ꜱᴛᴀᴛꜱ\n"
@@ -70,14 +74,14 @@ def home_callback(bot: telebot.TeleBot):
             f"    ├── ᴄᴩᴜ: [{bar(cpu)}] {cpu}%\n"
             f"    ╰── ʀᴀᴍ: [{bar(ram)}] {ram}%\n"
             "━━━━━━━━━━━━━━━━━━\n"
-            f"🔒 [ ʀᴏᴏᴛ ᴍᴀɪɴꜰʀᴀᴍᴇ : ᴏɴʟɪɴᴇ ]\n\n"
+            "🔒 [ ʀᴏᴏᴛ ᴍᴀɪɴꜰʀᴀᴍᴇ : ᴏɴʟɪɴᴇ ]\n\n"
             "⚡️ ʀᴏᴏᴛ_ᴛᴇʀᴍɪɴᴀʟ_ᴄᴏᴍᴍᴀɴᴅꜱ ⚡️\n"
             "━━━━━━━━━━━━━━━━━━\n"
             "╭── ✅ ɴᴏᴅᴇ ᴍᴀɴᴀɢᴇᴍᴇɴᴛ\n"
             "│   ├── /add : ᴅᴇᴩʟᴏʏ_ɴᴇᴡ_ᴜꜱᴇʀʙᴏᴛ\n"
-            "│   ├── /gen : ɪɴᴊᴇᴄᴛ_ꜱᴇꜱꜱɪᴏɴ_ꜱᴛʀɪɴɢ\n"
+            "│   ├── /gen : ɪɴ-ʙᴏᴛ ʟᴏɢɪɴ\n"
             "│   ├── /remove : ᴋɪʟʟ_ᴜꜱᴇʀʙᴏᴛ_ɴᴏᴅᴇ\n"
-            f"│   ╰── /nodes : ʟɪꜱᴛ_ᴀᴄᴛɪᴠᴇ_ʙᴏᴛꜱ [{get_userbot_count()} ᴀᴄᴛɪᴠᴇ]\n"
+            f"│   ╰── /nodes : [{get_userbot_count()} ᴀᴄᴛɪᴠᴇ]\n"
             "━━━━━━━━━━━━━━━━━━\n"
             f"💎 {POWERED_BY}"
         )
@@ -88,11 +92,12 @@ def home_callback(bot: telebot.TeleBot):
             telebot.types.InlineKeyboardButton("⚡ ɴᴏᴅᴇꜱ", callback_data="nodes"),
         )
         keyboard.row(
-            telebot.types.InlineKeyboardButton("➕ ᴀᴅᴅ ᴜꜱᴇʀʙᴏᴛ", callback_data="add_ub"),
+            telebot.types.InlineKeyboardButton("🔐 ʟᴏɢɪɴ / ᴀᴅᴅ ᴜꜱᴇʀʙᴏᴛ", callback_data="add_ub"),
         )
         try:
             bot.edit_message_text(
-                text, call.message.chat.id, call.message.message_id, reply_markup=keyboard
+                text, call.message.chat.id, call.message.message_id,
+                parse_mode="HTML", reply_markup=keyboard,
             )
         except Exception:
             pass

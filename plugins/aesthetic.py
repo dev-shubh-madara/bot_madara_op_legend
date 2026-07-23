@@ -4,6 +4,7 @@ Aesthetic / fun commands: /hug /slap /kiss /dice /fvn /spotify
 import random
 import telebot
 from config import POWERED_BY
+from helpers import bq, esc
 
 HUG_GIFS = [
     "https://media.giphy.com/media/od5H3PmEG5EVq/giphy.gif",
@@ -19,7 +20,6 @@ KISS_GIFS = [
     "https://media.giphy.com/media/G3va31oEEnIkM/giphy.gif",
 ]
 
-# Fancy font map (A–Z)
 FANCY = {
     "a": "ᴀ", "b": "ʙ", "c": "ᴄ", "d": "ᴅ", "e": "ᴇ",
     "f": "ꜰ", "g": "ɢ", "h": "ʜ", "i": "ɪ", "j": "ᴊ",
@@ -35,73 +35,77 @@ def to_fancy(text: str) -> str:
 
 def register(bot: telebot.TeleBot):
 
-    # ── /hug ──────────────────────────────────────────────────────
     @bot.message_handler(commands=["hug"])
     def hug_cmd(msg: telebot.types.Message):
-        target = ""
-        if msg.reply_to_message:
-            target = msg.reply_to_message.from_user.first_name
-        elif len(msg.text.split()) > 1:
-            target = msg.text.split(None, 1)[1]
+        target = (msg.reply_to_message.from_user.first_name
+                  if msg.reply_to_message
+                  else msg.text.split(None, 1)[1] if len(msg.text.split()) > 1 else "")
         sender = msg.from_user.first_name
-        caption = f"🤗 {sender} ʜᴜɢꜱ {target}!\n\n💎 {POWERED_BY}"
-        bot.send_animation(msg.chat.id, random.choice(HUG_GIFS), caption=caption)
+        bot.send_animation(
+            msg.chat.id, random.choice(HUG_GIFS),
+            caption=bq(f"🤗 {esc(sender)} ʜᴜɢꜱ {esc(target)}!\n\n💎 {POWERED_BY}"),
+            parse_mode="HTML",
+        )
 
-    # ── /slap ──────────────────────────────────────────────────────
     @bot.message_handler(commands=["slap"])
     def slap_cmd(msg: telebot.types.Message):
-        target = ""
-        if msg.reply_to_message:
-            target = msg.reply_to_message.from_user.first_name
-        elif len(msg.text.split()) > 1:
-            target = msg.text.split(None, 1)[1]
+        target = (msg.reply_to_message.from_user.first_name
+                  if msg.reply_to_message
+                  else msg.text.split(None, 1)[1] if len(msg.text.split()) > 1 else "")
         sender = msg.from_user.first_name
-        caption = f"👋 {sender} ꜱʟᴀᴩꜱ {target}!\n\n💎 {POWERED_BY}"
-        bot.send_animation(msg.chat.id, random.choice(SLAP_GIFS), caption=caption)
+        bot.send_animation(
+            msg.chat.id, random.choice(SLAP_GIFS),
+            caption=bq(f"👋 {esc(sender)} ꜱʟᴀᴩꜱ {esc(target)}!\n\n💎 {POWERED_BY}"),
+            parse_mode="HTML",
+        )
 
-    # ── /kiss ──────────────────────────────────────────────────────
     @bot.message_handler(commands=["kiss"])
     def kiss_cmd(msg: telebot.types.Message):
-        target = ""
-        if msg.reply_to_message:
-            target = msg.reply_to_message.from_user.first_name
-        elif len(msg.text.split()) > 1:
-            target = msg.text.split(None, 1)[1]
+        target = (msg.reply_to_message.from_user.first_name
+                  if msg.reply_to_message
+                  else msg.text.split(None, 1)[1] if len(msg.text.split()) > 1 else "")
         sender = msg.from_user.first_name
-        caption = f"💋 {sender} ᴋɪꜱꜱᴇꜱ {target}!\n\n💎 {POWERED_BY}"
-        bot.send_animation(msg.chat.id, random.choice(KISS_GIFS), caption=caption)
+        bot.send_animation(
+            msg.chat.id, random.choice(KISS_GIFS),
+            caption=bq(f"💋 {esc(sender)} ᴋɪꜱꜱᴇꜱ {esc(target)}!\n\n💎 {POWERED_BY}"),
+            parse_mode="HTML",
+        )
 
-    # ── /dice ──────────────────────────────────────────────────────
     @bot.message_handler(commands=["dice"])
     def dice_cmd(msg: telebot.types.Message):
         bot.send_dice(msg.chat.id)
 
-    # ── /fvn ──────────────────────────────────────────────────────
     @bot.message_handler(commands=["fvn"])
     def fvn_cmd(msg: telebot.types.Message):
         parts = msg.text.split(None, 1)
         if len(parts) < 2:
-            bot.send_message(msg.chat.id, "ᴜꜱᴀɢᴇ: /fvn <text>")
+            bot.send_message(msg.chat.id, bq("ᴜꜱᴀɢᴇ: /fvn ‹text›"), parse_mode="HTML")
             return
         result = to_fancy(parts[1])
-        bot.send_message(msg.chat.id, f"✨ ꜰᴀɴᴄʏ ᴛᴇxᴛ:\n\n{result}\n\n💎 {POWERED_BY}")
+        bot.send_message(
+            msg.chat.id,
+            bq(f"✨ ꜰᴀɴᴄʏ ᴛᴇxᴛ:\n\n{esc(result)}\n\n💎 {POWERED_BY}"),
+            parse_mode="HTML",
+        )
 
-    # ── /spotify ───────────────────────────────────────────────────
     @bot.message_handler(commands=["spotify"])
     def spotify_cmd(msg: telebot.types.Message):
         parts = msg.text.split(None, 1)
         if len(parts) < 2:
-            bot.send_message(msg.chat.id, "ᴜꜱᴀɢᴇ: /spotify <song name>")
+            bot.send_message(msg.chat.id, bq("ᴜꜱᴀɢᴇ: /spotify ‹song name›"), parse_mode="HTML")
             return
         query = parts[1].strip()
         search_url = f"https://open.spotify.com/search/{query.replace(' ', '%20')}"
         bot.send_message(
             msg.chat.id,
-            f"🎵 ꜱᴩᴏᴛɪꜰʏ ꜱᴇᴀʀᴄʜ\n"
-            "━━━━━━━━━━━━━━━━━━\n"
-            f"🔍 ꜱᴏɴɢ: {query}\n"
-            f"🔗 ʟɪɴᴋ: {search_url}\n"
-            "━━━━━━━━━━━━━━━━━━\n"
-            f"💎 {POWERED_BY}",
+            bq(
+                f"🎵 ꜱᴩᴏᴛɪꜰʏ ꜱᴇᴀʀᴄʜ\n"
+                "━━━━━━━━━━━━━━━━━━\n"
+                f"🔍 ꜱᴏɴɢ: {esc(query)}\n"
+                f"🔗 ʟɪɴᴋ: {search_url}\n"
+                "━━━━━━━━━━━━━━━━━━\n"
+                f"💎 {POWERED_BY}"
+            ),
+            parse_mode="HTML",
             disable_web_page_preview=True,
         )

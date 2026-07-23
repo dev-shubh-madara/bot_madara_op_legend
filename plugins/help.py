@@ -1,6 +1,7 @@
 import telebot
 from config import BOT_NAME, POWERED_BY, TAG_LINE
 from datetime import datetime
+from helpers import bq
 
 HELP_PAGES = [
     {
@@ -34,20 +35,20 @@ HELP_PAGES = [
             "╰ ⇛ /hug @user — ꜱᴇɴᴅ ᴀ ʜᴜɢ ɢɪꜰ\n"
             "│\n"
             "╭━━ [ 🎵 ꜱᴩᴏᴛɪꜰʏ ]\n"
-            "╰ ⇛ /spotify <song> — ꜱᴇᴀʀᴄʜ ꜱᴏɴɢ ɪɴꜰᴏ\n"
+            "╰ ⇛ /spotify ‹song› — ꜱᴇᴀʀᴄʜ ꜱᴏɴɢ ɪɴꜰᴏ\n"
             "│\n"
             "╭━━ [ 🔤 ꜰᴠɴ ]\n"
-            "╰ ⇛ /fvn <text> — ꜰᴀɴᴄʏ ꜰᴏɴᴛ ᴄᴏɴᴠᴇʀᴛᴇʀ"
+            "╰ ⇛ /fvn ‹text› — ꜰᴀɴᴄʏ ꜰᴏɴᴛ ᴄᴏɴᴠᴇʀᴛᴇʀ"
         ),
     },
     {
         "title": "🛠️ ɴᴏᴅᴇ ᴍᴀɴᴀɢᴇᴍᴇɴᴛ",
         "body": (
             "╭━━ [ 🛠️ ɴᴏᴅᴇ ᴍᴀɴᴀɢᴇᴍᴇɴᴛ ]\n"
-            "╰ ⇛ /add — ᴅᴇᴩʟᴏʏ ɴᴇᴡ ᴜꜱᴇʀʙᴏᴛ ꜱᴇꜱꜱɪᴏɴ\n"
+            "╰ ⇛ /gen — ʟᴏɢɪɴ ᴅɪʀᴇᴄᴛʟʏ ɪɴꜱɪᴅᴇ ᴛʜᴇ ʙᴏᴛ\n"
             "│\n"
-            "╭━━ [ 🔑 ꜱᴇꜱꜱɪᴏɴ ɢᴇɴ ]\n"
-            "╰ ⇛ /gen — ɢᴜɪᴅᴇ ᴛᴏ ɢᴇɴᴇʀᴀᴛᴇ ꜱᴇꜱꜱɪᴏɴ ꜱᴛʀɪɴɢ\n"
+            "╭━━ [ ➕ ᴍᴀɴᴜᴀʟ ]\n"
+            "╰ ⇛ /add — ᴩᴀꜱᴛᴇ ᴀ ꜱᴇꜱꜱɪᴏɴ ꜱᴛʀɪɴɢ\n"
             "│\n"
             "╭━━ [ ❌ ʀᴇᴍᴏᴠᴇ ]\n"
             "╰ ⇛ /remove — ᴋɪʟʟ ʏᴏᴜʀ ᴜꜱᴇʀʙᴏᴛ ɴᴏᴅᴇ\n"
@@ -60,19 +61,22 @@ HELP_PAGES = [
         "title": "🪐 ᴏᴡɴᴇʀ ᴄᴏᴍᴍᴀɴᴅꜱ",
         "body": (
             "╭━━ [ 🪐 ᴏᴡɴᴇʀ ᴏɴʟʏ ]\n"
-            "╰ ⇛ /broadcast <msg> — ꜱᴇɴᴅ ᴍꜱɢ ᴛᴏ ᴀʟʟ ᴜꜱᴇʀꜱ\n"
+            "╰ ⇛ /broadcast ‹msg› — ꜱᴇɴᴅ ᴍꜱɢ ᴛᴏ ᴀʟʟ ᴜꜱᴇʀꜱ\n"
+            "│\n"
+            "╭━━ [ 🎬 ꜱᴇᴛᴠɪᴅᴇᴏ ]\n"
+            "╰ ⇛ /setvideo start — ꜱᴇᴛ /start ᴠɪᴅᴇᴏ\n"
+            "    /setvideo ping  — ꜱᴇᴛ /ping ᴠɪᴅᴇᴏ\n"
             "│\n"
             "╭━━ [ 👥 ᴜꜱᴇʀ ᴍɢᴍᴛ ]\n"
             "╰ ⇛ /nodes — ᴠɪᴇᴡ ᴀʟʟ ᴄᴏɴɴᴇᴄᴛᴇᴅ ᴀᴄᴄᴏᴜɴᴛꜱ\n"
-            "    /remove <uid> — ᴋɪʟʟ ᴀɴʏ ɴᴏᴅᴇ (ᴏᴡɴᴇʀ)\n"
-            "    /stats — ʙᴏᴛ ꜱᴛᴀᴛꜱ ꜱɴᴀᴩꜱʜᴏᴛ"
+            "    /remove ‹uid› — ᴋɪʟʟ ᴀɴʏ ɴᴏᴅᴇ"
         ),
     },
     {
         "title": "💬 ᴜꜱᴇʀ ɪɴꜰᴏ",
         "body": (
             "╭━━ [ 💬 ᴜꜱᴇʀ ɪɴꜰᴏ ]\n"
-            "╰ ⇛ /info — ɪɴꜰᴏ ᴀʙᴏᴜᴛ ʏᴏᴜʀ ᴜꜱᴇʀʙᴏᴛ\n"
+            "╰ ⇛ /userinfo @user — ɪɴꜰᴏ ᴀʙᴏᴜᴛ ᴀ ᴜꜱᴇʀ\n"
             "│\n"
             "╭━━ [ 📊 ꜱᴛᴀᴛꜱ ]\n"
             "╰ ⇛ /stats — ʟɪᴠᴇ ꜱᴇʀᴠᴇʀ ꜱᴛᴀᴛꜱ\n"
@@ -95,13 +99,13 @@ HELP_PAGES = [
         ),
     },
     {
-        "title": "🔕 ꜱɪʟᴇɴᴄᴇ / ɢᴏ ᴛᴏ ꜱʟᴇᴇᴩ",
+        "title": "🔕 ᴅɴᴅ / ᴀꜰᴋ",
         "body": (
             "╭━━ [ 🔕 ᴅɴᴅ ]\n"
-            "╰ ⇛ /dnd — ᴍᴜᴛᴇ ᴀʟʟ ᴍᴇꜱꜱᴀɢᴇꜱ ꜰᴏʀ ʏᴏᴜʀ ᴜꜱᴇʀʙᴏᴛ\n"
+            "╰ ⇛ /dnd — ᴍᴜᴛᴇ ᴀʟʟ ɴᴏᴛɪꜰɪᴄᴀᴛɪᴏɴꜱ\n"
             "│\n"
             "╭━━ [ 💤 ᴀꜰᴋ ]\n"
-            "╰ ⇛ /afk <reason> — ꜱᴇᴛ ᴀᴜᴛᴏ ᴀꜰᴋ ʀᴇᴩʟʏ\n"
+            "╰ ⇛ /afk ‹reason› — ꜱᴇᴛ ᴀᴜᴛᴏ ᴀꜰᴋ ʀᴇᴩʟʏ\n"
             "│\n"
             "╭━━ [ ✅ ᴜɴᴀꜰᴋ ]\n"
             "╰ ⇛ /unafk — ʀᴇᴍᴏᴠᴇ ᴀꜰᴋ ꜱᴛᴀᴛᴜꜱ"
@@ -111,36 +115,36 @@ HELP_PAGES = [
         "title": "📝 ɴᴏᴛᴇꜱ",
         "body": (
             "╭━━ [ 📝 ꜱᴀᴠᴇɴᴏᴛᴇ ]\n"
-            "╰ ⇛ /savenote <name> — ꜱᴀᴠᴇ ᴀ ɴᴏᴛᴇ\n"
+            "╰ ⇛ /savenote ‹name› — ꜱᴀᴠᴇ ᴀ ɴᴏᴛᴇ\n"
             "│\n"
             "╭━━ [ 📋 ɢᴇᴛɴᴏᴛᴇ ]\n"
-            "╰ ⇛ /getnote <name> — ɢᴇᴛ ᴀ ꜱᴀᴠᴇᴅ ɴᴏᴛᴇ\n"
+            "╰ ⇛ /getnote ‹name› — ɢᴇᴛ ᴀ ꜱᴀᴠᴇᴅ ɴᴏᴛᴇ\n"
             "│\n"
             "╭━━ [ ❌ ᴅᴇʟɴᴏᴛᴇ ]\n"
-            "╰ ⇛ /delnote <name> — ᴅᴇʟᴇᴛᴇ ᴀ ɴᴏᴛᴇ\n"
+            "╰ ⇛ /delnote ‹name› — ᴅᴇʟᴇᴛᴇ ᴀ ɴᴏᴛᴇ\n"
             "│\n"
             "╭━━ [ 📜 ɴᴏᴛᴇꜱ ]\n"
             "╰ ⇛ /notes — ʟɪꜱᴛ ᴀʟʟ ɴᴏᴛᴇꜱ"
         ),
     },
     {
-        "title": "🎨 ᴛʜᴇᴍᴇꜱ / ʙɪᴏ",
+        "title": "🎨 ᴩʀᴏꜰɪʟᴇ / ʙɪᴏ",
         "body": (
             "╭━━ [ 🎨 ꜱᴇᴛʙɪᴏ ]\n"
-            "╰ ⇛ /setbio <text> — ꜱᴇᴛ ᴜꜱᴇʀʙᴏᴛ ʙɪᴏ\n"
+            "╰ ⇛ /setbio ‹text› — ꜱᴇᴛ ᴜꜱᴇʀʙᴏᴛ ʙɪᴏ\n"
             "│\n"
             "╭━━ [ 🖼️ ꜱᴇᴛᴩꜰᴩ ]\n"
             "╰ ⇛ /setpfp — ꜱᴇᴛ ᴜꜱᴇʀʙᴏᴛ ᴩʀᴏꜰɪʟᴇ ᴩʜᴏᴛᴏ\n"
             "│\n"
             "╭━━ [ 📛 ꜱᴇᴛɴᴀᴍᴇ ]\n"
-            "╰ ⇛ /setname <name> — ꜱᴇᴛ ᴜꜱᴇʀʙᴏᴛ ɴᴀᴍᴇ"
+            "╰ ⇛ /setname ‹name› — ꜱᴇᴛ ᴜꜱᴇʀʙᴏᴛ ɴᴀᴍᴇ"
         ),
     },
     {
         "title": "🌐 ᴜꜱᴇʀɪɴꜰᴏ / ɪᴅ",
         "body": (
             "╭━━ [ 🌐 ᴜꜱᴇʀɪɴꜰᴏ ]\n"
-            "╰ ⇛ /userinfo @user — ɢᴇᴛ ᴛᴇʟᴇɢʀᴀᴍ ᴜꜱᴇʀ ɪɴꜰᴏ\n"
+            "╰ ⇛ /userinfo @user — ɢᴇᴛ ᴜꜱᴇʀ ɪɴꜰᴏ\n"
             "│\n"
             "╭━━ [ 🆔 ɪᴅ ]\n"
             "╰ ⇛ /id — ɢᴇᴛ ʏᴏᴜʀ / ᴄʜᴀᴛ ɪᴅ\n"
@@ -153,69 +157,67 @@ HELP_PAGES = [
         "title": "🤖 ᴀᴜᴛᴏ ʀᴇᴩʟʏ",
         "body": (
             "╭━━ [ 🤖 ᴀᴜᴛᴏ ʀᴇᴩʟʏ ]\n"
-            "╰ ⇛ /autoreply add <trigger> | <reply>\n"
-            "    /autoreply del <trigger>\n"
+            "╰ ⇛ /autoreply add ‹trigger› | ‹reply›\n"
+            "    /autoreply del ‹trigger›\n"
             "    /autoreply list"
         ),
     },
     {
-        "title": "📣 ᴄʜᴀɴɴᴇʟ ᴛᴏᴏʟꜱ",
+        "title": "📣 ꜰᴏʀᴡᴀʀᴅ / ᴄᴏᴩʏ",
         "body": (
             "╭━━ [ 📣 ꜰᴏʀᴡᴀʀᴅ ]\n"
-            "╰ ⇛ /forward <chat> — ꜰᴏʀᴡᴀʀᴅ ᴍꜱɢ ᴛᴏ ᴄʜᴀᴛ\n"
+            "╰ ⇛ /forward ‹chat› — ꜰᴏʀᴡᴀʀᴅ ᴍꜱɢ\n"
             "│\n"
             "╭━━ [ 📩 ᴄᴏᴩʏ ]\n"
-            "╰ ⇛ /copy <chat> — ᴄᴏᴩʏ ᴍꜱɢ ᴛᴏ ᴄʜᴀᴛ"
+            "╰ ⇛ /copy ‹chat› — ᴄᴏᴩʏ ᴍꜱɢ ᴛᴏ ᴄʜᴀᴛ"
         ),
     },
     {
-        "title": "🧹 ᴄʟᴇᴀɴᴜᴩ ᴛᴏᴏʟꜱ",
+        "title": "🧹 ᴄʟᴇᴀɴᴜᴩ",
         "body": (
             "╭━━ [ 🧹 ᴅᴇʟ ]\n"
             "╰ ⇛ /del — ᴅᴇʟᴇᴛᴇ ʀᴇᴩʟɪᴇᴅ ᴍᴇꜱꜱᴀɢᴇ\n"
             "│\n"
-            "╭━━ [ 🗑️ ᴘᴜʀɢᴇ ]\n"
-            "╰ ⇛ /purge — ᴘᴜʀɢᴇ ᴍꜱɢꜱ ꜰʀᴏᴍ ʀᴇᴘʟɪᴇᴅ ᴛᴏ ʟᴀꜱᴛ\n"
+            "╭━━ [ 🗑️ ᴩᴜʀɢᴇ ]\n"
+            "╰ ⇛ /purge — ᴩᴜʀɢᴇ ꜰʀᴏᴍ ʀᴇᴩʟɪᴇᴅ ᴛᴏ ʟᴀꜱᴛ\n"
             "│\n"
             "╭━━ [ 🧼 ᴅᴇʟᴀʟʟ ]\n"
-            "╰ ⇛ /delall — ᴅᴇʟᴇᴛᴇ ᴀʟʟ ʏᴏᴜʀ ᴜʙ ᴍꜱɢꜱ ɪɴ ᴄʜᴀᴛ"
+            "╰ ⇛ /delall — ᴅᴇʟᴇᴛᴇ ᴀʟʟ ᴜʙ ᴍꜱɢꜱ ɪɴ ᴄʜᴀᴛ"
         ),
     },
     {
         "title": "🎲 ꜰᴜɴ",
         "body": (
             "╭━━ [ 🎲 ꜰᴜɴ ]\n"
-            "╰ ⇛ /hug @user — ꜱᴇɴᴅ ʜᴜɢ\n"
-            "    /slap @user — ꜱᴇɴᴅ ꜱʟᴀᴩ\n"
-            "    /kiss @user — ꜱᴇɴᴅ ᴋɪꜱꜱ\n"
+            "╰ ⇛ /hug • /slap • /kiss @user\n"
             "│\n"
             "╭━━ [ 🎰 ᴅɪᴄᴇ ]\n"
             "╰ ⇛ /dice — ʀᴏʟʟ ᴀ ᴅɪᴄᴇ"
         ),
     },
     {
-        "title": "🔧 ᴀᴅᴠᴀɴᴄᴇᴅ / ᴍɪꜱᴄ",
+        "title": "🔧 ᴀᴅᴠᴀɴᴄᴇᴅ (ᴏᴡɴᴇʀ)",
         "body": (
-            "╭━━ [ 🔧 ᴇᴠᴀʟ ] (ᴏᴡɴᴇʀ)\n"
-            "╰ ⇛ /eval <code> — ʀᴜɴ ᴘʏᴛʜᴏɴ ᴄᴏᴅᴇ\n"
+            "╭━━ [ 🔧 ᴇᴠᴀʟ ]\n"
+            "╰ ⇛ /eval ‹code› — ʀᴜɴ ᴩʏᴛʜᴏɴ\n"
             "│\n"
-            "╭━━ [ 🔄 ʀᴇꜱᴛᴀʀᴛ ] (ᴏᴡɴᴇʀ)\n"
-            "╰ ⇛ /restart — ʀᴇꜱᴛᴀʀᴛ ᴛʜᴇ ʙᴏᴛ\n"
+            "╭━━ [ 🖥️ ꜱʜᴇʟʟ ]\n"
+            "╰ ⇛ /sh ‹cmd› — ʀᴜɴ ꜱʜᴇʟʟ ᴄᴏᴍᴍᴀɴᴅ\n"
             "│\n"
-            "╭━━ [ 🖥️ ꜱʜᴇʟʟ ] (ᴏᴡɴᴇʀ)\n"
-            "╰ ⇛ /sh <cmd> — ʀᴜɴ ꜱʜᴇʟʟ ᴄᴏᴍᴍᴀɴᴅ"
+            "╭━━ [ 🔄 ʀᴇꜱᴛᴀʀᴛ ]\n"
+            "╰ ⇛ /restart — ʀᴇꜱᴛᴀʀᴛ ᴛʜᴇ ʙᴏᴛ"
         ),
     },
     {
         "title": "ℹ️ ᴀʙᴏᴜᴛ",
         "body": (
-            "╭━━ [ ℹ️ ᴀʙᴏᴜᴛ ]\n"
-            f"╰ ⇛ ʙᴏᴛ: {BOT_NAME}\n"
-            f"    {POWERED_BY}\n"
+            f"╭━━ [ ℹ️ ᴀʙᴏᴜᴛ {BOT_NAME} ]\n"
+            f"╰ ⇛ {POWERED_BY}\n"
             f"    {TAG_LINE}\n"
             "│\n"
-            "╭━━ [ 📞 ꜱᴜᴩᴩᴏʀᴛ ]\n"
-            "╰ ⇛ /help — ꜱʜᴏᴡ ᴛʜɪꜱ ᴍᴇɴᴜ"
+            "╭━━ [ 🎬 ᴠɪᴅᴇᴏꜱ (ᴏᴡɴᴇʀ) ]\n"
+            "╰ ⇛ /setvideo start — ꜱᴇᴛ /start ᴠɪᴅᴇᴏ\n"
+            "    /setvideo ping  — ꜱᴇᴛ /ping ᴠɪᴅᴇᴏ"
         ),
     },
 ]
@@ -227,7 +229,7 @@ def help_text(page: int) -> str:
     idx = max(0, min(page - 1, TOTAL_PAGES - 1))
     p = HELP_PAGES[idx]
     now = datetime.now().strftime("%I:%M %p")
-    return (
+    inner = (
         f"💀 [ {BOT_NAME} ] 💀\n"
         "━━━━━━━━━━━━━━━━━━━━━\n"
         f"{p['body']}\n"
@@ -236,6 +238,7 @@ def help_text(page: int) -> str:
         f"⏳ ᴛɪᴍᴇ: {now}\n"
         f"💎 ꜱʏꜱᴛᴇᴍ: ᴏɴʟɪɴᴇ 🟢 │ {POWERED_BY}"
     )
+    return bq(inner)
 
 
 def help_keyboard(page: int) -> telebot.types.InlineKeyboardMarkup:
@@ -255,7 +258,7 @@ def register(bot: telebot.TeleBot):
 
     @bot.message_handler(commands=["help"])
     def help_cmd(msg: telebot.types.Message):
-        bot.send_message(msg.chat.id, help_text(1), reply_markup=help_keyboard(1))
+        bot.send_message(msg.chat.id, help_text(1), parse_mode="HTML", reply_markup=help_keyboard(1))
 
     @bot.callback_query_handler(func=lambda c: c.data.startswith("help_"))
     def help_page_cb(call: telebot.types.CallbackQuery):
@@ -264,6 +267,7 @@ def register(bot: telebot.TeleBot):
             help_text(page),
             call.message.chat.id,
             call.message.message_id,
+            parse_mode="HTML",
             reply_markup=help_keyboard(page),
         )
         bot.answer_callback_query(call.id)

@@ -21,6 +21,27 @@ def init_db():
                 active      INTEGER DEFAULT 1
             )
         """)
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS settings (
+                key   TEXT PRIMARY KEY,
+                value TEXT NOT NULL DEFAULT ''
+            )
+        """)
+        conn.commit()
+
+
+def get_setting(key: str) -> str:
+    with get_conn() as conn:
+        row = conn.execute("SELECT value FROM settings WHERE key=?", (key,)).fetchone()
+    return row[0] if row else ""
+
+
+def set_setting(key: str, value: str):
+    with get_conn() as conn:
+        conn.execute(
+            "INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)",
+            (key, value),
+        )
         conn.commit()
 
 
