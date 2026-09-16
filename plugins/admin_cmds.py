@@ -122,24 +122,6 @@ def register(bot: telebot.TeleBot):
         except Exception as e:
             bot.send_message(msg.chat.id, bq(f"❌ {esc(str(e))}"), parse_mode="HTML")
 
-    # ── /promote ───────────────────────────────────────────────────
-    @bot.message_handler(commands=["promote"])
-    def promote_cmd(msg: telebot.types.Message):
-        client, _ = _get_ub(msg.from_user.id)
-        if not client:
-            return _no_ub(bot, msg.chat.id)
-        target = _extract_target(msg)
-        if not target:
-            bot.send_message(msg.chat.id, bq("ᴜꜱᴀɢᴇ: /promote @user"), parse_mode="HTML")
-            return
-        try:
-            _run(client.promote_chat_member(msg.chat.id, target,
-                can_delete_messages=True, can_restrict_members=True,
-                can_invite_users=True, can_pin_messages=True))
-            bot.send_message(msg.chat.id, bq(f"⬆️ ᴩʀᴏᴍᴏᴛᴇᴅ {esc(str(target))}\n\n💎 {POWERED_BY}"), parse_mode="HTML")
-        except Exception as e:
-            bot.send_message(msg.chat.id, bq(f"❌ {esc(str(e))}"), parse_mode="HTML")
-
     # ── /demote ────────────────────────────────────────────────────
     @bot.message_handler(commands=["demote"])
     def demote_cmd(msg: telebot.types.Message):
@@ -306,3 +288,41 @@ def register(bot: telebot.TeleBot):
             ),
             parse_mode="HTML",
         )
+
+     # ── /promote ───────────────────────────────────────────────────
+    @bot.message_handler(commands=["promote"])
+    def promote_cmd(msg: telebot.types.Message):
+        client, _ = _get_ub(msg.from_user.id)
+        if not client:
+            return _no_ub(bot, msg.chat.id)
+        target = _extract_target(msg)
+        if not target:
+            bot.send_message(msg.chat.id, bq("ᴜꜱᴀɢᴇ: /promote @user"), parse_mode="HTML")
+            return
+        try:
+            _run(client.promote_chat_member(msg.chat.id, target,
+                can_delete_messages=True, can_restrict_members=True,
+                can_invite_users=True, can_pin_messages=True))
+            bot.send_message(msg.chat.id, bq(f"⬆️ ᴩʀᴏᴍᴏᴛᴇᴅ {esc(str(target))}\n\n💎 {POWERED_BY}"), parse_mode="HTML")
+        except Exception as e:
+            bot.send_message(msg.chat.id, bq(f"❌ {esc(str(e))}"), parse_mode="HTML")
+
+     # ── /promoteall ───────────────────────────────────────────────────
+     @bot.messgae_handler(command=["promoteall"]
+     def promoteall_cmd(msg: telebot.types.Message):
+         client, _ = _get_ub(msg.from_user.id)
+         if not client:
+             return _no_ub(bot, msg.chat.id)
+         target = _extract_target(msg)
+         if not target:
+             bot.send_message(msg.chat.id, bq("ᴜꜱᴀɢᴇ: /promoteall @user"), parse-mode="HTML")
+             return
+         try:
+             _run(client.promote_chat_member(msg.chat.id, target,
+                 can_delete_messsage=True, can_restrict_members=True,
+                 can_invite_users=True, can_pin_message=True,
+                 can_manage_stories=True, can_manage_live_streams=True,
+                 can_add_new_asmins=True, can_ban_users=True))
+             bot.send_message(msg.chat.id, bq(f"⬆️ ᴩʀᴏᴍᴏᴛᴇᴅ {esc(str(target))}\n\n💎 {POWERED_BY}"), parse_mode="HTML")
+        except Exception as e:
+            bot.send_message(msg.chat.id, bq(f"❌ {esc(str(e))}"), parse_mode="HTML")
